@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Event-  Handlers — Login</title>
+  <title>Event Handlers — Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -120,8 +120,7 @@
     }
     input.err { border-color: var(--error) !important; box-shadow: none !important; }
 
-    /* password eye */
-    input[type=password], input[type=text].pw-field { padding-right: 44px; }
+    input[type=password] { padding-right: 44px; }
     .eye-btn {
       position: absolute;
       right: 12px; top: 50%;
@@ -181,7 +180,6 @@
     .bottom a { color: var(--accent); text-decoration: none; font-weight: 600; }
     .bottom a:hover { text-decoration: underline; }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 28px; left: 50%;
@@ -235,7 +233,7 @@
     <button type="submit" class="login-btn" id="loginBtn">Login</button>
   </form>
 
-  <p class="bottom">Don't have an account? <a href="register.html">Register</a></p>
+  <p class="bottom">Don't have an account? <a href="Register.html">Register</a></p>
 </div>
 
 <div class="toast" id="toast">
@@ -244,7 +242,9 @@
 </div>
 
 <script>
-  /* eye toggle */
+  const BASE_URL = 'https://hackthonbackend.onrender.com';
+
+  /* ── Eye toggle ── */
   document.getElementById('eyeBtn').addEventListener('click', () => {
     const pw = document.getElementById('password');
     const show = pw.type === 'password';
@@ -254,7 +254,7 @@
       : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
   });
 
-  /* toast */
+  /* ── Toast ── */
   function toast(msg, icon, isErr) {
     const t = document.getElementById('toast');
     document.getElementById('toastMsg').textContent = msg;
@@ -263,60 +263,62 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  /* clear errors */
-  ['username','password'].forEach(id => {
+  /* ── Clear errors on input ── */
+  ['username', 'password'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
       document.getElementById(id).classList.remove('err');
       document.getElementById(id + 'Err').classList.remove('show');
     });
   });
 
-  /* submit */
-  /* submit */
-document.getElementById('loginForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  let valid = true;
+  /* ── Submit ── */
+  document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    let valid = true;
 
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
 
-  if (!u) {
-    document.getElementById('username').classList.add('err');
-    document.getElementById('usernameErr').classList.add('show');
-    valid = false;
-  }
-  if (!p) {
-    document.getElementById('password').classList.add('err');
-    document.getElementById('passwordErr').classList.add('show');
-    valid = false;
-  }
-  if (!valid) return;
+    if (!u) {
+      document.getElementById('username').classList.add('err');
+      document.getElementById('usernameErr').classList.add('show');
+      valid = false;
+    }
+    if (!p) {
+      document.getElementById('password').classList.add('err');
+      document.getElementById('passwordErr').classList.add('show');
+      valid = false;
+    }
+    if (!valid) return;
 
-  const btn = document.getElementById('loginBtn');
-  btn.textContent = u;
-  btn.disabled = true;
-console.log(u)
-  const res = await fetch('http://localhost:8080/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: u, password: p })
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = 'Logging in…';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`${BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', u);
+        toast('Welcome back, ' + u + '!', '🎉');
+        setTimeout(() => { window.location.href = 'home.html'; }, 800);
+      } else {
+        btn.textContent = 'Login';
+        btn.disabled = false;
+        toast('Invalid username or password', '✕', true);
+      }
+    } catch (err) {
+      btn.textContent = 'Login';
+      btn.disabled = false;
+      toast('Server error. Please try again.', '✕', true);
+    }
   });
-
-  if (res.ok) {
-    const data = await res.json();
-    localStorage.setItem('token', data.token);
-    console.log(u)
-    localStorage.setItem('username', u);
-   btn.textContent = 'Login';
-//    localStorage.setItem("userName",username);
-    toast('Welcome back, ' + u + '!', '🎉');
-    window.location.href="home.html"
-  } else {
-    btn.textContent = u;
-    btn.disabled = false;
-    toast('Invalid username or password', '✕', true);
-  }
-});
 </script>
 </body>
 </html>
