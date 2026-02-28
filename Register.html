@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event - Handlers — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #050810;
+      --surface: #0d1120;
+      --border: rgba(255,255,255,0.08);
+      --accent: #00f5c4;
+      --text: #e8eaf2;
+      --muted: #6b7280;
+      --error: #f87171;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      animation: fadeUp 0.6s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=password] {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      background: rgba(0,245,196,0.04);
+      box-shadow: 0 0 0 3px rgba(0,245,196,0.08);
+    }
+
+    input.err { border-color: var(--error) !important; }
+
+    .err-msg {
+      font-size: 0.75rem;
+      color: var(--error);
+      display: none;
+    }
+    .err-msg.show { display: block; }
+
+    /* OTP row */
+    .otp-section { margin-bottom: 16px; }
+
+    .otp-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    #otpInput {
+      flex: 1;
+      letter-spacing: 8px;
+      font-size: 1.05rem;
+      text-align: center;
+      display: none;
+    }
+    #otpInput.visible { display: block; }
+
+    #otpBtn {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,245,196,0.35);
+      cursor: pointer;
+      white-space: nowrap;
+      background: rgba(0,245,196,0.1);
+      color: var(--accent);
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    #otpBtn:hover:not(:disabled) {
+      background: rgba(0,245,196,0.18);
+      transform: translateY(-1px);
+    }
+    #otpBtn.validate-mode {
+      background: var(--accent);
+      color: #050810;
+      border-color: var(--accent);
+    }
+    #otpBtn.validate-mode:hover:not(:disabled) {
+      background: #00ddb0;
+      box-shadow: 0 6px 20px rgba(0,245,196,0.3);
+    }
+    #otpBtn.verified {
+      background: rgba(52,211,153,0.15);
+      color: #34d399;
+      border-color: rgba(52,211,153,0.4);
+      pointer-events: none;
+    }
+    #otpBtn:disabled { opacity: 0.55; pointer-events: none; }
+
+    .countdown {
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-top: 5px;
+      text-align: right;
+      display: none;
+    }
+    .countdown.show { display: block; }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #050810;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .submit-btn:hover:not(:disabled) {
+      background: #00ddb0;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0,245,196,0.3);
+    }
+    .submit-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+    .login-link {
+      text-align: center;
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-top: 20px;
+    }
+    .login-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .login-link a:hover { text-decoration: underline; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0d2e26;
+      border: 1px solid rgba(0,245,196,0.3);
+      color: var(--accent);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 11px 22px;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 999;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 480px) {
+      .card { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <span class="logo">Event Handlers </span>
+  <h1>Create Account</h1>
+  <p class="subtitle">Fill in your details to get started</p>
+
+  <form id="regForm" novalidate>
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="e.g. alexj"/>
+      <span class="err-msg" id="usernameErr">Please enter a username</span>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com"/>
+      <span class="err-msg" id="emailErr">Enter a valid email address</span>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Min. 8 characters"/>
+      <span class="err-msg" id="passwordErr">Password must be at least 8 characters</span>
+    </div>
+
+    <div class="field">
+      <label for="location">Location</label>
+      <input type="text" id="location" placeholder="City, Country"/>
+      <span class="err-msg" id="locationErr">Please enter your location</span>
+    </div>
+
+    <!-- OTP -->
+    <div class="otp-section">
+      <div class="otp-row">
+        <input type="text" id="otpInput" maxlength="6" placeholder="· · · · · ·"/>
+        <button type="button" id="otpBtn">✉ Send OTP</button>
+      </div>
+      <div class="countdown" id="countdown"></div>
+      <span class="err-msg" id="otpErr">Please enter the 6-digit OTP</span>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Register</button>
+  </form>
+
+  <p class="login-link">Already have an account? <a href="#">Login</a></p>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg">OTP sent!</span>
+</div>
+
+<script>
+  const BASE_URL = 'https://hackthonbackend.onrender.com';
+
+  let otpSent     = false;
+  let otpVerified = false;
+  let timer;
+
+  const otpBtn   = document.getElementById('otpBtn');
+  const otpInput = document.getElementById('otpInput');
+  const countEl  = document.getElementById('countdown');
+
+  /* ── Toast helper ── */
+  function toast(msg, icon = '✓') {
+    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toastIcon').textContent = icon;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ── Countdown ── */
+  function startTimer(sec) {
+    clearInterval(timer);
+    countEl.classList.add('show');
+    let s = sec;
+    countEl.textContent = `Resend available in ${s}s`;
+    timer = setInterval(() => {
+      s--;
+      if (s <= 0) {
+        clearInterval(timer);
+        countEl.classList.remove('show');
+        if (!otpVerified) {
+          otpBtn.textContent = '↩ Resend OTP';
+          otpBtn.className = 'validate-mode';
+          otpSent = false;
+        }
+      } else {
+        countEl.textContent = `Resend available in ${s}s`;
+      }
+    }, 1000);
+  }
+
+  /* ── OTP button click ── */
+  otpBtn.addEventListener('click', async () => {
+    if (otpVerified) return;
+
+    const email = document.getElementById('email').value.trim();
+    const emailErr = document.getElementById('emailErr');
+
+    /* ── VALIDATE mode ── */
+    if (otpSent) {
+      const val = otpInput.value.trim();
+      const otpErr = document.getElementById('otpErr');
+
+      if (val.length !== 6) {
+        otpErr.textContent = 'Please enter the 6-digit OTP';
+        otpErr.classList.add('show');
+        otpInput.classList.add('err');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/email/validOtp?user=${encodeURIComponent(email)}&otpNumber=${val}`);
+        const isValid = await res.json(); // returns true or false
+
+        if (!isValid) {
+          otpErr.textContent = 'Wrong OTP. Please try again.';
+          otpErr.classList.add('show');
+          otpInput.classList.add('err');
+          return;
+        }
+
+        // ✅ Correct OTP
+        otpErr.classList.remove('show');
+        otpInput.classList.remove('err');
+        otpVerified = true;
+        clearInterval(timer);
+        countEl.classList.remove('show');
+
+        otpBtn.textContent = '✓ Verified';
+        otpBtn.className = 'verified';
+        otpInput.style.borderColor = '#34d399';
+        otpInput.disabled = true;
+        toast('OTP verified!');
+
+      } catch (e) {
+        otpErr.textContent = 'Validation failed. Try again.';
+        otpErr.classList.add('show');
+      }
+      return;
+    }
+
+    /* ── SEND mode ── */
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailErr.classList.add('show');
+      document.getElementById('email').classList.add('err');
+      return;
+    }
+
+    otpBtn.disabled = true;
+    otpBtn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch(`${BASE_URL}/email/sendOtp?user=${encodeURIComponent(email)}`);
+      const result = await res.text(); // returns "true" or error message
+
+      if (result !== 'true') throw new Error(result);
+
+      otpSent = true;
+      otpBtn.disabled = false;
+      otpBtn.textContent = '✔ Validate OTP';
+      otpBtn.className = 'validate-mode';
+
+      otpInput.classList.add('visible');
+      otpInput.focus();
+
+      startTimer(30);
+      toast('OTP sent to your email!', '✉');
+
+    } catch (e) {
+      otpBtn.disabled = false;
+      otpBtn.textContent = '✉ Send OTP';
+      toast('Failed to send OTP. Check server.', '✕');
+    }
+  });
+
+  /* ── Clear errors on type ── */
+  ['username','email','password','location'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('err');
+      document.getElementById(id + 'Err').classList.remove('show');
+    });
+  });
+  otpInput.addEventListener('input', () => {
+    otpInput.classList.remove('err');
+    document.getElementById('otpErr').classList.remove('show');
+  });
+
+  /* ── Form submit ── */
+  document.getElementById('regForm').addEventListener('submit', e => {
+    e.preventDefault();
+    let valid = true;
+
+    const checks = [
+      { id: 'username', err: 'usernameErr', fn: v => v.length > 0 },
+      { id: 'email',    err: 'emailErr',    fn: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+      { id: 'password', err: 'passwordErr', fn: v => v.length >= 8 },
+      { id: 'location', err: 'locationErr', fn: v => v.length > 0 },
+    ];
+
+    checks.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (!c.fn(el.value.trim())) {
+        el.classList.add('err');
+        document.getElementById(c.err).classList.add('show');
+        valid = false;
+      }
+    });
+
+    if (!otpVerified) {
+      document.getElementById('otpErr').textContent = 'Please verify your OTP first';
+      document.getElementById('otpErr').classList.add('show');
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    const btn = document.getElementById('submitBtn');
+
+    async function register(customer) {
+      try {
+        const res = await fetch(`${BASE_URL}/Register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(customer)
+        });
+
+        if (!res.ok) throw new Error('Registration failed');
+
+        btn.textContent = '✓ Account Created!';
+        toast('🎉 Welcome to Event Handlers!', '🎉');
+        window.location.href = "login.html";
+
+      } catch (e) {
+        btn.textContent = 'Register';
+        btn.disabled = false;
+        toast('Registration failed. Try again.', '✕');
+      }
+    }
+
+    const customer = {
+      username: document.getElementById('username').value.trim(),
+      email:    document.getElementById('email').value.trim(),
+      password: document.getElementById('password').value,
+      location: document.getElementById('location').value.trim()
+    };
+
+    register(customer);
+  });
+</script>
+</body>
+</html>
