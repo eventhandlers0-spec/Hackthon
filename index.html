@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Handlers — Landing Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #050810;
+      --surface: #0d1120;
+      --border: rgba(255,255,255,0.08);
+      --accent: #00f5c4;
+      --accent2: #7b5cf7;
+      --text: #e8eaf2;
+      --muted: #6b7280;
+      --nav-h: 70px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(5,8,16,0.75);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: background 0.3s;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-decoration: none;
+      margin-right: 24px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 8px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #050810;
+    }
+    .btn-primary:hover { background: #00ddb0; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,245,196,0.3); }
+
+    /* ─── HAMBURGER ─── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      position: fixed;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: rgba(5,8,16,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      z-index: 99;
+      transform: translateY(-110%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .mobile-menu.open { transform: translateY(0); }
+    .mobile-menu .nav-link { font-size: 1rem; padding: 10px 14px; }
+    .mobile-menu .btn { width: 100%; justify-content: center; padding: 12px; font-size: 1rem; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridSlide 20s linear infinite;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 40%, transparent 100%);
+    }
+    @keyframes gridSlide { from { background-position: 0 0; } to { background-position: 60px 60px; } }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.18;
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 500px; height: 500px; background: var(--accent2); top: -100px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 400px; height: 400px; background: var(--accent); bottom: -80px; right: -80px; animation-delay: 3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent2); top: 40%; left: 60%; animation-delay: 5s; }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(123,92,247,0.15);
+      border: 1px solid rgba(123,92,247,0.3);
+      color: #a78bfa;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+      position: relative;
+      animation: fadeUp 0.8s ease both;
+    }
+    .badge-dot { width: 6px; height: 6px; background: #a78bfa; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 1;
+      letter-spacing: 2px;
+      position: relative;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    .hero h1 .line-accent { color: var(--accent); }
+
+    .hero p {
+      max-width: 540px;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 24px auto 40px;
+      position: relative;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-xl { font-size: 1rem; padding: 14px 32px; border-radius: 12px; }
+
+    .btn-outline-xl {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1rem;
+      padding: 14px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-outline-xl:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: translateY(-1px); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── FEATURES ─── */
+    .features {
+      padding: 100px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 1px;
+      margin-bottom: 60px;
+      line-height: 1.05;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 36px 30px;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,245,196,0.25);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,245,196,0.05);
+    }
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+    }
+    .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+    .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer .brand { font-size: 1.4rem; display: block; margin-bottom: 10px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-left .nav-link, .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu { display: flex; }
+      .features { padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-left">
+    <a href="#" class="brand">Event Handlers</a>
+    <a href="#about" class="nav-link">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      About Us
+    </a>
+    <a href="searchBar.html" class="btn btn-primary" style="margin-left:8px">Search Events</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="login.html" class="btn btn-ghost">Login</a>
+    <a href="Register.html" class="btn btn-primary">Register</a>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" class="nav-link">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    About Us
+  </a>
+  <a href="searchBar.html" class="btn btn-primary" style="margin-top:4px">Search Events</a>
+  <a href="login.html" class="btn btn-ghost" style="margin-top:8px">Login</a>
+  <a href="Register.html" class="btn btn-primary">Register</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Find Local Events Quickly
+  </div>
+
+  <h1>
+    Find All<br/>
+    <span class="line-accent">New</span><br/>
+    Events
+  </h1>
+
+  <p>Discover everything happening around you — from cultural festivals and tech meetups to workshops, concerts, and community gatherings. Our website brings together all local events in one place, making it easy for you to explore, stay updated, and never miss out.</p>
+
+  <div class="hero-cta">
+    <a href="Register.html" class="btn btn-primary btn-xl">Register →</a>
+    <a href="login.html" class="btn-outline-xl">Login</a>
+  </div>
+</section>
+
+<!-- ABOUT / FEATURES -->
+<section class="features" id="about">
+  <span class="section-label">What we offer</span>
+  <h2 class="section-title">All Available Local Events<br/>so you need not to <span style="color:var(--accent)">worry about searching</span></h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(0,245,196,0.1)">⚡</div>
+      <h3>Lightning Fast</h3>
+      <p>We update events at lightning speed to ensure you always have the latest information in real time.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(123,92,247,0.1)">🔐</div>
+      <h3>Secure by Default</h3>
+      <p>Enterprise-grade end-to-end encryption keeps your data safe at every layer.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(0,245,196,0.1)">🤝</div>
+      <h3>Real-Time Event Updates</h3>
+      <p>Stay ahead with real-time updates on all local events. We ensure the latest details and changes are published instantly so you never miss out.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(123,92,247,0.1)">📊</div>
+      <h3>Comprehensive Event Insights</h3>
+      <p>Explore trending events, popular categories, and community engagement with smart insights that help you discover what's happening around you.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(0,245,196,0.1)">🔌</div>
+      <h3>Wide Event Coverage</h3>
+      <p>Access 100+ types of local events including festivals, workshops, tech meetups, concerts, and community gatherings — all in one convenient platform.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(123,92,247,0.1)">🌙</div>
+      <h3>24/7 Support</h3>
+      <p>Our team is always online to help. Average first response time under 3 minutes, any time of day.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="brand">Event Handlers</span>
+  Built with passion · © 2026 Event Handlers. All rights reserved.
+</footer>
+
+<script>
+  // Hamburger toggle
+  const hamburger  = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+
+  // Close mobile menu on nav link click
+  mobileMenu.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+  // Navbar scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').style.background =
+      window.scrollY > 20 ? 'rgba(5,8,16,0.95)' : 'rgba(5,8,16,0.75)';
+  });
+
+  // Fade-in cards on scroll
+  const cards = document.querySelectorAll('.card');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.style.animation = `fadeUp 0.6s ${i * 0.08}s ease both`;
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  cards.forEach(c => { c.style.opacity = '0'; observer.observe(c); });
+</script>
+</body>
+</html>
