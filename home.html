@@ -1,0 +1,646 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event  Handlers — Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #050810;
+      --surface: #0d1120;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.08);
+      --accent: #00f5c4;
+      --accent2: #7b5cf7;
+      --text: #e8eaf2;
+      --muted: #6b7280;
+      --nav-h: 68px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(5,8,16,0.8);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 3px;
+      color: var(--accent); text-decoration: none;
+    }
+
+    .profile-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px 6px 6px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .profile-pill:hover { border-color: rgba(255,255,255,0.18); background: var(--surface2); }
+
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .profile-info { line-height: 1.2; }
+    .profile-name { font-size: 0.85rem; font-weight: 600; }
+    .profile-loc  { font-size: 0.72rem; color: var(--muted); display: flex; align-items: center; gap: 3px; }
+    .profile-loc svg { width: 10px; height: 10px; }
+
+    .profile-caret { color: var(--muted); margin-left: 2px; }
+    .profile-caret svg { width: 14px; height: 14px; }
+
+    .profile-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      min-width: 180px;
+      display: none;
+      z-index: 200;
+      animation: fadeUp 0.2s ease;
+    }
+    .profile-pill.open .profile-dropdown { display: block; }
+
+    .dropdown-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px;
+      font-size: 0.85rem; color: var(--muted);
+      cursor: pointer; transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .dropdown-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .dropdown-item.danger { color: #f87171; }
+    .dropdown-item.danger:hover { background: rgba(248,113,113,0.08); }
+    .dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: calc(var(--nav-h) + 40px) 24px 60px;
+      position: relative; z-index: 1;
+    }
+
+    .greeting { margin-bottom: 28px; }
+    .greeting h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: 1px; line-height: 1;
+    }
+    .greeting h1 span { color: var(--accent); }
+    .greeting p { font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
+
+    .search-wrap { position: relative; margin-bottom: 32px; }
+    .search-wrap svg.s-ico {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px; color: var(--muted);
+      pointer-events: none; transition: color 0.2s;
+    }
+    .search-wrap:focus-within svg.s-ico { color: var(--accent); }
+
+    #searchInput {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 15px 50px 15px 50px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #searchInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,245,196,0.08);
+    }
+    #searchInput::placeholder { color: var(--muted); }
+
+    .clear-btn {
+      position: absolute; right: 16px; top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.06); border: none;
+      border-radius: 6px; color: var(--muted);
+      width: 28px; height: 28px;
+      cursor: pointer; display: none;
+      align-items: center; justify-content: center;
+      font-size: 0.85rem; transition: background 0.2s, color 0.2s;
+    }
+    .clear-btn.show { display: flex; }
+    .clear-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+
+    .section-head {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-head h2 {
+      font-size: 1rem; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-head h2 svg { width: 16px; height: 16px; color: var(--accent); }
+    .loc-badge {
+      font-size: 0.75rem; font-weight: 600;
+      background: rgba(0,245,196,0.1);
+      border: 1px solid rgba(0,245,196,0.25);
+      color: var(--accent);
+      padding: 3px 10px; border-radius: 100px;
+    }
+    .results-count { font-size: 0.8rem; color: var(--muted); }
+    .results-count span { color: var(--accent); font-weight: 600; }
+
+    #eventList { display: flex; flex-direction: column; gap: 12px; }
+
+    .event-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      display: flex; align-items: center; gap: 18px;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      animation: fadeUp 0.4s ease both;
+    }
+    .event-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0,245,196,0.2);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.3);
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    .date-badge {
+      flex-shrink: 0; width: 52px;
+      background: rgba(0,245,196,0.07);
+      border: 1px solid rgba(0,245,196,0.18);
+      border-radius: 12px;
+      text-align: center; padding: 10px 6px;
+    }
+    .date-badge .day {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; line-height: 1; color: var(--accent);
+    }
+    .date-badge .mon {
+      font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); margin-top: 2px;
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+    .event-name {
+      font-size: 0.98rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 7px;
+    }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .meta-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.78rem; color: var(--muted);
+    }
+    .meta-item svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .type-tag {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px;
+      background: rgba(123,92,247,0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(123,92,247,0.25);
+      flex-shrink: 0; align-self: flex-start;
+      white-space: nowrap;
+    }
+
+    .reg-btn {
+      flex-shrink: 0;
+      background: var(--accent);
+      color: #050810;
+      border: none; border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700; font-size: 0.82rem;
+      padding: 9px 18px;
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .reg-btn:hover {
+      background: #00ddb0; transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0,245,196,0.3);
+    }
+    .reg-btn.registered {
+      background: rgba(52,211,153,0.12);
+      color: #34d399;
+      border: 1px solid rgba(52,211,153,0.3);
+      pointer-events: none;
+    }
+
+    .skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      display: flex; align-items: center; gap: 18px;
+    }
+    .skel-box {
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 200% 100%;
+      border-radius: 8px;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+    .skel-date  { width: 52px; height: 66px; border-radius: 12px; flex-shrink: 0; }
+    .skel-body  { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .skel-title { height: 16px; width: 60%; }
+    .skel-meta  { height: 12px; width: 80%; }
+    .skel-btn   { width: 80px; height: 36px; border-radius: 9px; flex-shrink: 0; }
+
+    .empty { text-align: center; padding: 60px 24px; display: none; }
+    .empty.show { display: block; }
+    .empty-icon { font-size: 2.8rem; margin-bottom: 14px; }
+    .empty h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .empty p { font-size: 0.84rem; color: var(--muted); }
+
+    mark {
+      background: rgba(0,245,196,0.18);
+      color: var(--accent); border-radius: 3px; padding: 0 2px;
+    }
+
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0d2e26;
+      border: 1px solid rgba(0,245,196,0.3);
+      color: var(--accent);
+      font-size: 0.86rem; font-weight: 600;
+      padding: 10px 20px; border-radius: 100px;
+      display: flex; align-items: center; gap: 8px;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 16px; }
+      .profile-info { display: none; }
+      .event-card { flex-wrap: wrap; gap: 12px; }
+      .reg-btn { width: 100%; text-align: center; }
+      .type-tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="#" class="logo">Event Handlers</a>
+
+  <div class="profile-pill" id="profilePill">
+    <div class="avatar" id="avatarEl">?</div>
+    <div class="profile-info">
+      <div class="profile-name" id="profileName">Loading…</div>
+      <div class="profile-loc">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="profileLoc">—</span>
+      </div>
+    </div>
+    <div class="profile-caret">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div class="profile-dropdown">
+      <a href="#" class="dropdown-item">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </a>
+      <a href="#" class="dropdown-item">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        My Events
+      </a>
+      <div class="dropdown-divider"></div>
+      <div class="dropdown-item danger" id="logoutBtn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="greeting">
+    <h1>Hey, <span id="greetName">there</span> 👋</h1>
+    <p>Here are events happening near you</p>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="s-ico" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search events by name, location, type…" autocomplete="off"/>
+    <button class="clear-btn" id="clearBtn">✕</button>
+  </div>
+
+  <div class="section-head">
+    <h2>
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Events near you
+      <select id="locationSelect" class="loc-badge" style="background:rgba(0,245,196,0.1);border:1px solid rgba(0,245,196,0.25);color:var(--accent);padding:3px 10px;border-radius:100px;cursor:pointer;outline:none;">
+        <option value="">All Locations</option>
+        <option value="Anantapur">Anantapur</option>
+        <option value="Hyderabad">Hyderabad</option>
+        <option value="Bangalore">Bangalore</option>
+        <option value="Chennai">Chennai</option>
+        <option value="Delhi">Delhi</option>
+      </select>
+    </h2>
+    <div class="results-count" id="resultCount"></div>
+  </div>
+
+  <div id="eventList"></div>
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">🔍</div>
+    <h3>No events found</h3>
+    <p>Try searching something else or check back later</p>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+  /* ── Config ── */
+  const BASE_URL = 'https://hackthonbackend.onrender.com';
+
+  /* ── State ── */
+  let ALL_EVENTS = [];
+  let query = '';
+  let userLocation = '';
+  let userName = '';
+
+  const locationSelect = document.getElementById('locationSelect');
+  const listEl         = document.getElementById('eventList');
+  const emptyEl        = document.getElementById('emptyState');
+  const countEl        = document.getElementById('resultCount');
+  const searchInput    = document.getElementById('searchInput');
+  const clearBtn       = document.getElementById('clearBtn');
+
+  /* ── Toast ── */
+  function toast(msg, icon = '✓') {
+    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toastIcon').textContent = icon;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ── Skeleton loaders ── */
+  function showSkeletons(n = 4) {
+    listEl.innerHTML = Array(n).fill(`
+      <div class="skeleton">
+        <div class="skel-box skel-date"></div>
+        <div class="skel-body">
+          <div class="skel-box skel-title"></div>
+          <div class="skel-box skel-meta"></div>
+        </div>
+        <div class="skel-box skel-btn"></div>
+      </div>
+    `).join('');
+  }
+
+  /* ── Parse date ── */
+  function parseDateTime(dt) {
+    const d = new Date(dt);
+    return {
+      day:  d.getDate(),
+      mon:  d.toLocaleString('en', { month: 'short' }),
+      full: d.toLocaleDateString('en', { weekday:'short', year:'numeric', month:'short', day:'numeric' }),
+      time: d.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })
+    };
+  }
+
+  /* ── Highlight match ── */
+  function hl(text, q) {
+    if (!q || !text) return text || '';
+    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    return text.replace(re, '<mark>$1</mark>');
+  }
+
+  /* ── Render ── */
+  function render() {
+    const q = query.toLowerCase().trim();
+
+    const filtered = ALL_EVENTS.filter(ev => {
+      const matchLoc = !userLocation ||
+        (ev.location || '').toLowerCase() === userLocation.toLowerCase();
+      const matchQ = !q ||
+        (ev.taskName  || '').toLowerCase().includes(q) ||
+        (ev.location  || '').toLowerCase().includes(q) ||
+        (ev.eventType || '').toLowerCase().includes(q);
+      return matchLoc && matchQ;
+    });
+
+    listEl.innerHTML = '';
+
+    if (!filtered.length) {
+      emptyEl.classList.add('show');
+      countEl.innerHTML = '';
+      return;
+    }
+
+    emptyEl.classList.remove('show');
+    countEl.innerHTML = `<span>${filtered.length}</span> event${filtered.length !== 1 ? 's' : ''}`;
+
+    filtered.forEach((ev, i) => {
+      const d = parseDateTime(ev.dateOfTask);
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.style.animationDelay = `${i * 0.06}s`;
+      card.innerHTML = `
+        <div class="date-badge">
+          <div class="day">${d.day}</div>
+          <div class="mon">${d.mon}</div>
+        </div>
+        <div class="card-body">
+          <div class="event-name">${hl(ev.taskName, q)}</div>
+          <div class="meta-row">
+            <span class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              ${d.full}
+            </span>
+            <span class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ${d.time}
+            </span>
+            <span class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${hl(ev.location || '—', q)}
+            </span>
+          </div>
+        </div>
+        ${ev.eventType ? `<span class="type-tag">${ev.eventType}</span>` : ''}
+        <button class="reg-btn" data-id="${ev.task_id}" onclick="registerEvent(this, ${ev.task_id})">Register</button>
+      `;
+      listEl.appendChild(card);
+    });
+  }
+
+  /* ── Location filter ── */
+  locationSelect.addEventListener('change', () => {
+    userLocation = locationSelect.value;
+    localStorage.setItem('userLocation', userLocation);
+    render();
+  });
+
+  /* ── Register for event ── */
+  async function registerEvent(btn, taskId) {
+    const storedUser = localStorage.getItem('username');
+    if (!storedUser) {
+      toast('Please login first', '⚠');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '…';
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/EventRegister?task_id=${taskId}&userName=${encodeURIComponent(storedUser)}`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          }
+        }
+      );
+
+      if (response.ok) {
+        btn.textContent = '✓ Registered';
+        btn.classList.add('registered');
+        toast("You're registered for this event!", '🎉');
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Register';
+        toast('Registration failed', '❌');
+      }
+    } catch (error) {
+      btn.disabled = false;
+      btn.textContent = 'Register';
+      toast('Server error', '❌');
+    }
+  }
+
+  /* ── Load user profile ── */
+  function loadProfile() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userName = payload.sub || payload.username || 'User';
+      } catch(e) {
+        userName = 'User';
+      }
+    } else {
+      userName = localStorage.getItem('username') || 'User';
+    }
+
+    userLocation = localStorage.getItem('userLocation') || '';
+
+    document.getElementById('profileName').textContent = userName;
+    document.getElementById('greetName').textContent   = userName;
+    document.getElementById('profileLoc').textContent  = userLocation || 'Set location';
+    document.getElementById('avatarEl').textContent    = userName.charAt(0).toUpperCase();
+    locationSelect.value = userLocation;
+  }
+
+  /* ── Fetch all events ── */
+  async function loadEvents() {
+    showSkeletons(4);
+    try {
+      const res = await fetch(`${BASE_URL}/Event/allEvents`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+      });
+      ALL_EVENTS = await res.json();
+      render();
+    } catch (e) {
+      listEl.innerHTML = '';
+      countEl.innerHTML = '<span style="color:#f87171">Failed to load events</span>';
+    }
+  }
+
+  /* ── Search ── */
+  searchInput.addEventListener('input', () => {
+    query = searchInput.value;
+    clearBtn.classList.toggle('show', query.length > 0);
+    render();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    query = '';
+    clearBtn.classList.remove('show');
+    searchInput.focus();
+    render();
+  });
+
+  /* ── Profile dropdown ── */
+  document.getElementById('profilePill').addEventListener('click', function(e) {
+    if (e.target.closest('.profile-dropdown')) return;
+    this.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#profilePill'))
+      document.getElementById('profilePill').classList.remove('open');
+  });
+
+  /* ── Logout ── */
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('userLocation');
+    window.location.href = 'login.html';
+  });
+
+  /* ── Init ── */
+  loadProfile();
+  loadEvents();
+</script>
+</body>
+</html>
