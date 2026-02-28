@@ -288,6 +288,8 @@
 </div>
 
 <script>
+  const BASE_URL = 'https://hackthonbackend.onrender.com';
+
   let otpSent     = false;
   let otpVerified = false;
   let timer;
@@ -347,7 +349,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:8080/email/validOtp?user=${encodeURIComponent(email)}&otpNumber=${val}`);
+        const res = await fetch(`${BASE_URL}/email/validOtp?user=${encodeURIComponent(email)}&otpNumber=${val}`);
         const isValid = await res.json(); // returns true or false
 
         if (!isValid) {
@@ -388,7 +390,7 @@
     otpBtn.textContent = 'Sending…';
 
     try {
-      const res = await fetch(`http://localhost:8080/email/sendOtp?user=${encodeURIComponent(email)}`);
+      const res = await fetch(`${BASE_URL}/email/sendOtp?user=${encodeURIComponent(email)}`);
       const result = await res.text(); // returns "true" or error message
 
       if (result !== 'true') throw new Error(result);
@@ -453,28 +455,30 @@
     if (!valid) return;
 
     const btn = document.getElementById('submitBtn');
-    async function register(customer){
-          try {
-      const res = await fetch('http://localhost:8080/Register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(customer)
-      });
 
-      if (!res.ok) throw new Error('Registration failed');
+    async function register(customer) {
+      try {
+        const res = await fetch(`${BASE_URL}/Register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(customer)
+        });
 
-      btn.textContent = '✓ Account Created!';
-      toast('🎉 Welcome to Event Handlers!', '🎉');
-      window.location.href="login.html";
-       
-    } catch (e) {
-      btn.textContent = 'Register';
-      btn.disabled = false;
-      toast('Registration failed. Try again.', '✕');
+        if (!res.ok) throw new Error('Registration failed');
+
+        btn.textContent = '✓ Account Created!';
+        toast('🎉 Welcome to Event Handlers!', '🎉');
+        window.location.href = "login.html";
+
+      } catch (e) {
+        btn.textContent = 'Register';
+        btn.disabled = false;
+        toast('Registration failed. Try again.', '✕');
+      }
     }
-    }
-  const customer = {
-      username: document.getElementById('userName').value.trim(),
+
+    const customer = {
+      username: document.getElementById('username').value.trim(),
       email:    document.getElementById('email').value.trim(),
       password: document.getElementById('password').value,
       location: document.getElementById('location').value.trim()
