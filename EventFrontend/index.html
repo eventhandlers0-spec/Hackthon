@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Events — Landing Page</title>
+  <title>Event Handlers — Landing Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,7 +45,6 @@
       transition: background 0.3s;
     }
 
-    /* LEFT side */
     .nav-left {
       display: flex;
       align-items: center;
@@ -74,38 +73,8 @@
       transition: color 0.2s, background 0.2s;
     }
     .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-
     .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    /* Search bar */
-    .search-wrap {
-      display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0 12px;
-      gap: 8px;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .search-wrap:focus-within {
-      border-color: var(--accent);
-      background: rgba(0,245,196,0.05);
-    }
-    .search-wrap svg { color: var(--muted); width: 15px; height: 15px; flex-shrink: 0; }
-    .search-wrap input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      width: 160px;
-      height: 36px;
-    }
-    .search-wrap input::placeholder { color: var(--muted); }
-
-    /* RIGHT side */
     .nav-right {
       display: flex;
       align-items: center;
@@ -179,8 +148,6 @@
     }
     .mobile-menu.open { transform: translateY(0); }
     .mobile-menu .nav-link { font-size: 1rem; padding: 10px 14px; }
-    .mobile-menu .search-wrap { width: 100%; margin: 8px 0; }
-    .mobile-menu .search-wrap input { width: 100%; }
     .mobile-menu .btn { width: 100%; justify-content: center; padding: 12px; font-size: 1rem; }
 
     /* ─── HERO ─── */
@@ -196,7 +163,6 @@
       overflow: hidden;
     }
 
-    /* Animated grid */
     .hero::before {
       content: '';
       position: absolute;
@@ -210,7 +176,6 @@
     }
     @keyframes gridSlide { from { background-position: 0 0; } to { background-position: 60px 60px; } }
 
-    /* Glow orbs */
     .orb {
       position: absolute;
       border-radius: 50%;
@@ -255,7 +220,6 @@
       position: relative;
       animation: fadeUp 0.8s 0.1s ease both;
     }
-
     .hero h1 .line-accent { color: var(--accent); }
 
     .hero p {
@@ -277,11 +241,7 @@
       animation: fadeUp 0.8s 0.3s ease both;
     }
 
-    .btn-xl {
-      font-size: 1rem;
-      padding: 14px 32px;
-      border-radius: 12px;
-    }
+    .btn-xl { font-size: 1rem; padding: 14px 32px; border-radius: 12px; }
 
     .btn-outline-xl {
       background: transparent;
@@ -290,6 +250,13 @@
       font-size: 1rem;
       padding: 14px 32px;
       border-radius: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
     }
     .btn-outline-xl:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: translateY(-1px); }
 
@@ -297,25 +264,6 @@
       from { opacity: 0; transform: translateY(28px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    /* Stats */
-    .stats {
-      display: flex;
-      gap: 60px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 80px;
-      position: relative;
-      animation: fadeUp 0.8s 0.4s ease both;
-    }
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
-      color: var(--accent);
-      letter-spacing: 1px;
-    }
-    .stat-label { font-size: 0.82rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
 
     /* ─── FEATURES ─── */
     .features {
@@ -380,11 +328,10 @@
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
-      .nav-left .nav-link, .nav-left .search-wrap, .nav-right { display: none; }
+      .nav-left .nav-link, .nav-right { display: none; }
       .hamburger { display: flex; }
       .mobile-menu { display: flex; }
       .features { padding: 60px 20px; }
-      .stats { gap: 36px; }
     }
   </style>
 </head>
@@ -392,28 +339,20 @@
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <!-- LEFT -->
   <div class="nav-left">
-    <a href="#" class="brand">Get Updates OF Local Events</a>
-
+    <a href="#" class="brand">Event Handlers</a>
     <a href="#about" class="nav-link">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       About Us
     </a>
-
-    <div class="search-wrap">
-      <!-- <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> -->
-      <a href="searchBar.html" class="btn btn-primary">Search Available Events Here</a>
-    </div>
+    <a href="searchBar.html" class="btn btn-primary" style="margin-left:8px">Search Events</a>
   </div>
 
-  <!-- RIGHT -->
   <div class="nav-right">
     <a href="login.html" class="btn btn-ghost">Login</a>
     <a href="Register.html" class="btn btn-primary">Register</a>
   </div>
 
-  <!-- HAMBURGER -->
   <button class="hamburger" id="hamburger" aria-label="Toggle menu">
     <span></span><span></span><span></span>
   </button>
@@ -425,12 +364,9 @@
     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     About Us
   </a>
-  <div class="search-wrap">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" placeholder="Search anything…" />
-  </div>
-  <a href="#" class="btn btn-ghost" style="margin-top:8px">Login</a>
-  <a href="#" class="btn btn-primary">Register</a>
+  <a href="searchBar.html" class="btn btn-primary" style="margin-top:4px">Search Events</a>
+  <a href="login.html" class="btn btn-ghost" style="margin-top:8px">Login</a>
+  <a href="Register.html" class="btn btn-primary">Register</a>
 </div>
 
 <!-- HERO -->
@@ -441,7 +377,7 @@
 
   <div class="hero-badge">
     <span class="badge-dot"></span>
-    Find local Events Quickly
+    Find Local Events Quickly
   </div>
 
   <h1>
@@ -450,53 +386,48 @@
     Events
   </h1>
 
-  <p>Discover everything happening around you — from cultural festivals and tech meetups to workshops, concerts, and community gatherings. Our website brings together all local events in one place, making it easy for you to explore, stay updated, and never miss out on what’s happening in your city.</p>
+  <p>Discover everything happening around you — from cultural festivals and tech meetups to workshops, concerts, and community gatherings. Our website brings together all local events in one place, making it easy for you to explore, stay updated, and never miss out.</p>
 
   <div class="hero-cta">
-    <a href="#" class="btn btn-primary btn-xl">Register →</a>
-    <a href="#about" class="btn btn-outline-xl">Login</a>
+    <a href="Register.html" class="btn btn-primary btn-xl">Register →</a>
+    <a href="login.html" class="btn-outline-xl">Login</a>
   </div>
-
-  <!-- <div class="stats">
-    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Active Users</div></div>
-    <div class="stat"><div class="stat-num">0&</div><div class="stat-label">Uptime</div></div>
-    <div class="stat"><div class="stat-num">120+</div><div class="stat-label">Countries</div></div>
-    <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Rating</div></div>
-  </div> -->
 </section>
 
 <!-- ABOUT / FEATURES -->
 <section class="features" id="about">
   <span class="section-label">What we offer</span>
-  <h2 class="section-title">All Available Local Events<br/>so you need not to <span style="color:var(--accent)">worry for searching</span></h2>
+  <h2 class="section-title">All Available Local Events<br/>so you need not to <span style="color:var(--accent)">worry about searching</span></h2>
 
   <div class="cards">
     <div class="card">
       <div class="card-icon" style="background:rgba(0,245,196,0.1)">⚡</div>
       <h3>Lightning Fast</h3>
-      <p>We update events at lightning speed to ensure you always have the latest information in real time. ⚡</p>
+      <p>We update events at lightning speed to ensure you always have the latest information in real time.</p>
     </div>
     <div class="card">
       <div class="card-icon" style="background:rgba(123,92,247,0.1)">🔐</div>
       <h3>Secure by Default</h3>
-      <p>Enterprise-grade end-to-end encryption and SOC 2 compliance keep your data safe at every layer.</p>
+      <p>Enterprise-grade end-to-end encryption keeps your data safe at every layer.</p>
     </div>
     <div class="card">
       <div class="card-icon" style="background:rgba(0,245,196,0.1)">🤝</div>
-      <h3>Lightning-Fast Event Updates</h3>
-<p>Stay ahead with real-time updates on all local events. We ensure the latest event details, announcements, and changes are published instantly so you never miss out.</p></div>
+      <h3>Real-Time Event Updates</h3>
+      <p>Stay ahead with real-time updates on all local events. We ensure the latest details and changes are published instantly so you never miss out.</p>
+    </div>
     <div class="card">
       <div class="card-icon" style="background:rgba(123,92,247,0.1)">📊</div>
-     <h3>Comprehensive Event Insights</h3>
-<p>Explore trending events, popular categories, and community engagement with smart insights that help you discover what’s happening and what’s in demand around you.</p> 
+      <h3>Comprehensive Event Insights</h3>
+      <p>Explore trending events, popular categories, and community engagement with smart insights that help you discover what's happening around you.</p>
     </div>
     <div class="card">
       <div class="card-icon" style="background:rgba(0,245,196,0.1)">🔌</div>
       <h3>Wide Event Coverage</h3>
-<p>Access 100+ types of local events including festivals, workshops, tech meetups, concerts, cultural programs, and community gatherings — all in one convenient platform.</p></div>
+      <p>Access 100+ types of local events including festivals, workshops, tech meetups, concerts, and community gatherings — all in one convenient platform.</p>
+    </div>
     <div class="card">
       <div class="card-icon" style="background:rgba(123,92,247,0.1)">🌙</div>
-      <h3>24 / 7 Support</h3>
+      <h3>24/7 Support</h3>
       <p>Our team is always online to help. Average first response time under 3 minutes, any time of day.</p>
     </div>
   </div>
@@ -505,12 +436,12 @@
 <!-- FOOTER -->
 <footer>
   <span class="brand">Event Handlers</span>
-  Built with passion · © 2026 EventHandlers. All rights reserved.
+  Built with passion · © 2026 Event Handlers. All rights reserved.
 </footer>
 
 <script>
   // Hamburger toggle
-  const hamburger = document.getElementById('hamburger');
+  const hamburger  = document.getElementById('hamburger');
   const mobileMenu = document.getElementById('mobileMenu');
 
   hamburger.addEventListener('click', () => {
@@ -532,15 +463,7 @@
       window.scrollY > 20 ? 'rgba(5,8,16,0.95)' : 'rgba(5,8,16,0.75)';
   });
 
-  // Search enter key
-  document.getElementById('searchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && e.target.value.trim()) {
-      alert(`Searching for: "${e.target.value.trim()}"`);
-      e.target.value = '';
-    }
-  });
-
-  // Fade-in cards on scroll (Intersection Observer)
+  // Fade-in cards on scroll
   const cards = document.querySelectorAll('.card');
   const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, i) => {
