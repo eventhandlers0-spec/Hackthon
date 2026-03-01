@@ -487,7 +487,7 @@
     };
 
     try {
-      await apiFetch('/addEvent', { method: 'POST', body: JSON.stringify(payload) });
+      await apiFetch('/Event/addEvent', { method: 'POST', body: JSON.stringify(payload) });
       notify('Event added successfully ✓');
       closeModal('add-event-modal');
       clearAddForm();
