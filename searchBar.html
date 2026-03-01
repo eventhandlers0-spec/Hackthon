@@ -308,7 +308,7 @@
   async function loadEvents() {
     try {
       const res = await fetch('https://hackthonbackend.onrender.com/Event/allEvents', {
-        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+      
       });
       EVENTS = await res.json();
       render();
